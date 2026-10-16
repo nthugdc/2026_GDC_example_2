@@ -1,0 +1,61 @@
+第 4 章解答：Ch4_HeroAnimator
+=============================
+完整程式碼：Teacher/Scripts/Ch4_HeroAnimator_Answer.cs
+完成的 Animator：Animations/Hero.controller（教師版場景用的就是它）
+
+
+TODO 4-A ─ Speed
+----------------
+    anim.SetFloat("Speed", Mathf.Abs(rb.linearVelocity.x));
+
+    為什麼要 Mathf.Abs？
+      往左跑時 linearVelocity.x 是負的（例如 -5）。
+      轉換條件寫的是 Speed > 0.1，-5 > 0.1 不成立 → 往左跑永遠停在 Idle。
+      Speed 這個參數的意思是「多快」，不是「往哪」。方向交給 4-C 處理。
+
+    為什麼用速度而不用 MoveInput？
+      撞牆時按著方向鍵，MoveInput 是 1 但實際沒在動，用速度才不會原地跑步。
+      冰面上放開方向鍵還在滑，用速度會繼續播跑步動畫，比較合理。
+
+
+TODO 4-B ─ Grounded
+-------------------
+    anim.SetBool("Grounded", move.IsGrounded());
+
+    Any State → Jump 的條件是 Grounded == false。
+    如果 Animator 裡 Grounded 的預設值沒打勾，一進遊戲就會先跳一下 Jump 動畫。
+
+
+TODO 4-C ─ 面向
+---------------
+    if (move.MoveInput > 0f) sr.flipX = false;
+    if (move.MoveInput < 0f) sr.flipX = true;
+
+    為什麼不寫 sr.flipX = move.MoveInput < 0f？
+      那樣放開方向鍵時（MoveInput = 0）會變回 false —— 角色往左走、一放手就轉回右邊。
+      「沒輸入時維持原狀」是這題真正的考點。
+
+
+Animator 的設定
+---------------
+  參數：Speed (Float)、Grounded (Bool，預設勾選)
+  轉換（全部 Has Exit Time 取消、Transition Duration = 0）：
+    Idle → Run      Speed Greater 0.1
+    Run → Idle      Speed Less 0.1
+    Any State → Jump  Grounded false（Can Transition To Self 取消）
+    Jump → Idle     Grounded true
+
+  Has Exit Time 的意義：「目前這段動畫播到一定比例才准離開」。
+  適合過場動畫，不適合要即時反應的操作動畫。
+
+  Any State 的 Can Transition To Self 不關的話，在空中每一幀都會重新進入 Jump，
+  動畫一直卡在第一格。
+
+
+常見問題
+--------
+  ・黃字 Parameter 'Speed' does not exist：名字打錯或大小寫不同
+  ・往左跑還是 Idle：少了 Mathf.Abs
+  ・按方向鍵要等一下才開始跑：某條轉換的 Has Exit Time 沒取消
+  ・Animation 視窗按 Create 沒反應：沒有先選取 Player
+  ・切圖後角色變超大/超小：Pixels Per Unit 被改掉了，應該是 128

@@ -1,0 +1,58 @@
+第 0 ~ 2 章解答（不用寫程式的章節）
+=====================================
+
+教師版場景（Teacher/Scenes/ChN_..._Answer）就是做完之後的樣子，可以直接開來對照。
+
+
+第 0 章 · Grid 與 Tilemap
+-------------------------
+  Ground   Tilemap Renderer > Order in Layer：-30 → 0
+  Bridge   Tilemap > Color 的 A：0 → 255
+           Tilemap Collider 2D：勾選啟用
+
+  為什麼地面看不見卻踩得住？
+    畫面（Tilemap Renderer）和碰撞（Tilemap Collider 2D）是兩個獨立的元件。
+    Order in Layer 只影響「誰畫在前面」，跟碰撞完全無關。
+    橋則是反過來：看得到不代表踩得到。這一章的重點就是把這兩件事分開。
+
+  Cell Size 實驗：Grid 只決定「格子多大」，磁磚圖的大小由 sprite 的
+  Pixels Per Unit 決定（本專案 128 px = 1 單位）。兩者不一致就會重疊或出現縫。
+
+
+第 1 章 · Tile Palette
+----------------------
+  Ground 加上（順序很重要）：
+    1. Tilemap Collider 2D，Composite Operation = Merge
+    2. Composite Collider 2D（自動帶出 Rigidbody 2D）
+    3. Rigidbody 2D 的 Body Type = Static
+
+  畫圖：坑（x = 12 ~ 16、y = -1）補滿；擦掉 x = 22 ~ 23 的高牆；
+        終點平台前疊 4 階樓梯（教師版放在 x = 27 ~ 30）。
+
+  為什麼要 Static？
+    CompositeCollider2D 必須跟一個 Rigidbody2D 在一起，Unity 會自動加，
+    但預設是 Dynamic —— 會受重力掉下去。地形永遠不動，所以是 Static。
+    讓學生先看一次「整片地面掉下去」，比口頭講印象深十倍。
+
+  為什麼要 Composite？
+    沒有 Composite 時每一格是一個獨立的方塊碰撞，相鄰方塊的接縫偶爾會
+    讓角色卡一下（俗稱 ghost collision），碰撞器數量也多。Merge 之後變成一整塊。
+
+
+第 2 章 · Rule Tile 與動畫磁磚
+------------------------------
+  Lava_Ch2：Min Speed、Max Speed 都改 4（任何 > 0 的值都會動）
+
+  Ground_Ch2 新增兩條規則（加在清單最後即可，在四條「頂端」規則的後面）：
+    左 = 紅色 X（NotThis）       → Sprite：Art/Tiles/Ground_L
+    右 = 紅色 X（NotThis）       → Sprite：Art/Tiles/Ground_R
+  加分：左右都是紅色 X → Ground_LR，要拖到 L、R 兩條的「上面」
+
+  為什麼順序重要？
+    RuleTile 由上往下比對，第一條符合就停。「左右都空」也同時符合「左空」，
+    如果 L 排在 LR 前面，LR 永遠輪不到。原則：條件越多越前面。
+
+  踏腳石：教師版放在 (13~15, 0) 與 (19~20, 0)。全速跳一次約前進 4 格，
+  踏腳石放太窄或離邊緣太遠都會掉進岩漿，可以讓學生自己試出來。
+
+  完整的草地規則（Tiles/Ground）就是這份解答，學生可以打開來對照。

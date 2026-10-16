@@ -1,0 +1,39 @@
+第 6 章參考做法：Ch6_Footstep 與 Animation Event
+================================================
+參考程式碼：Teacher/Scripts/Ch6_Footstep_Answer.cs
+已加好事件的動畫：Teacher/Animations/Hero_Run_Ch6_Answer.anim（第 1、4 格）
+
+
+最精簡的答案
+------------
+    using UnityEngine;
+
+    public class Ch6_Footstep : MonoBehaviour
+    {
+        public void Footstep()
+        {
+            HeroMove move = GetComponent<HeroMove>();
+            GDCFx.Puff(move.FeetPosition(), Color.white);
+        }
+    }
+
+  參考程式碼多做了兩件事：在 Awake 先存好 HeroMove（不要每次都 GetComponent），
+  以及在空中時不冒煙（跑步動畫在跳起來的瞬間可能還在播）。
+
+
+Animation Event 的規則
+----------------------
+  ・函式必須是 public，而且掛在「跟 Animator 同一個物件」上的腳本裡
+  ・函式名稱要完全一樣，大小寫也算
+  ・可以沒有參數，或有一個 float / int / string / Object 參數
+  ・同一個片段被別的物件用、但那個物件沒有這個函式 → Console 出現
+    「AnimationEvent 'Footstep' has no receiver」。
+    所以這章的跑步動畫另外複製了一份（Hero_Run_Ch6），避免影響第 4 章
+
+
+評分參考（自由創作章）
+----------------------
+  基本：從起點走得到終點、有用到至少兩種磁磚、Hazard 有放岩漿
+  腳本：跑步時每一步都有灰塵
+  加分：自製 Rule Tile、Animation Event 用在跑步以外的地方、把挖磚搬過來、
+        關卡有明顯的設計意圖（例如冰面接岩漿的陷阱）

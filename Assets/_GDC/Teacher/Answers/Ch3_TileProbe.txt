@@ -1,0 +1,88 @@
+第 3 章解答：Ch3_TileProbe
+==========================
+完整程式碼：Teacher/Scripts/Ch3_TileProbe_Answer.cs
+
+
+TODO 3-A ─ 腳下是哪一格、放什麼
+-------------------------------
+    feetCell = groundMap.WorldToCell(move.FeetPosition());
+    under = groundMap.GetTile(feetCell);
+
+    為什麼用 FeetPosition() 不用 transform.position？
+      transform.position 是角色「中心」，大約在腰的高度，那一格是空氣。
+      FeetPosition() 是腳底再往下 0.1，剛好落在踩著的那一格裡。
+      可以讓學生故意改成 transform.position 試試：under 永遠是 null。
+
+
+TODO 3-B ─ 冰面
+---------------
+    if (under == iceTile) move.acceleration = iceAcceleration;
+    else move.acceleration = normalAcceleration;
+
+    為什麼一定要有 else？
+      只寫前半句的話，踩過一次冰之後 acceleration 就永遠是 3 —— 整關都變冰。
+      「進入某狀態」和「離開某狀態」要成對處理，這個觀念之後寫任何遊戲都會一直用到。
+
+    為什麼可以用 == 比較磁磚？
+      GetTile 回傳的是「磁磚資產本身」（同一個檔案），不是複製品，
+      所以跟 Inspector 指定的 iceTile 是同一個物件。
+
+
+TODO 3-C ─ 岩漿
+---------------
+    if (under == lavaTile)
+    {
+        respawner.Respawn();
+        GameManager.Instance.Fail("踩到岩漿了！回到起點");
+    }
+
+    這裡的岩漿跟第 2 章不同：它放在 Ground 圖層、有實體碰撞，是「踩得上去的地板」，
+    完全靠程式判斷才會致命。對照第 2 章（Hazard 圖層 + Trigger + KillZone），
+    可以討論兩種做法的差別：Trigger 適合「碰到就算」，GetTile 適合「站在上面才算」。
+
+
+TODO 3-D ─ 滑鼠指著哪一格
+-------------------------
+    Vector3 world = cam.ScreenToWorldPoint(mouse.position.ReadValue());
+    world.z = 0f;
+    mouseCell = groundMap.WorldToCell(world);
+
+    為什麼要 world.z = 0？
+      Vector2 傳進 ScreenToWorldPoint 會被補成 z = 0，意思是「離攝影機 0 單位」，
+      換算出來的世界座標 z 就是攝影機本身的 z（-10）。
+      Grid 的 cellSize.z = 1，所以 WorldToCell 算出 z = -10 的格子 —— 那一層什麼都沒有。
+      這是 2D 滑鼠操作最常見的 bug，值得讓學生親眼看一次 Debug.Log 印出來的 z。
+
+
+TODO 3-E ─ 左鍵挖磚
+-------------------
+    if (dig && groundMap.GetTile(mouseCell) == brickTile)
+    {
+        groundMap.SetTile(mouseCell, null);
+        GameManager.Instance.AddScore(1);
+    }
+
+    SetTile(cell, null) 就是清空。TilemapCollider2D 會在下一個物理步驟自動更新，
+    Composite 也會重新合併，不需要任何額外程式。
+
+
+TODO 3-F ─ 右鍵放磚
+-------------------
+    if (place && !groundMap.HasTile(mouseCell) && GameManager.Instance.score > 0)
+    {
+        groundMap.SetTile(mouseCell, brickTile);
+        GameManager.Instance.AddScore(-1);
+    }
+
+    三個條件缺一不可：
+      沒檢查 HasTile → 可以把草地「覆蓋」成紅磚，再挖掉，無限挖穿地形
+      沒檢查分數     → 磚塊用不完，挖磚就沒意義了
+
+
+常見問題
+--------
+  ・NullReferenceException 在 groundMap 那行：Inspector 的 Ground Map 沒指定（重建章節會自動填好）
+  ・挖不動：九成是 z 沒歸零；一成是點到不是紅磚的格子
+  ・在自己身上放磚會被擠出去：Composite 把角色推出碰撞範圍，正常現象
+  ・Console 有黃色警告「under is assigned but never used」：TODO 還沒寫完時會出現，寫完就消失
+    （學生版已經用 #pragma 關掉）

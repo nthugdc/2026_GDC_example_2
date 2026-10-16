@@ -1,0 +1,46 @@
+第 5 章解答：Ch5_MouseTarget 與綁骨步驟
+=======================================
+完整程式碼：Teacher/Scripts/Ch5_MouseTarget_Answer.cs
+綁好骨的圖：Teacher/Art/RigHero_Rigged.png（用 Skinning Editor 打開可以看骨架與權重）
+
+
+TODO 5-A ─ 滑鼠 → 世界座標
+--------------------------
+    goal = cam.ScreenToWorldPoint(mouse.position.ReadValue());
+    goal.z = 0f;
+
+    跟第 3 章同一個 z 陷阱。這次沒歸零的後果是 HandTarget 被放到 z = -10，
+    跑到攝影機的「後面」（攝影機在 z = -10，只看得到 z 比它大的東西），所以整個消失。
+    IK 還是會跟著它算，所以手會動、圈圈卻不見 —— 很適合當除錯練習。
+
+
+TODO 5-B ─ 平滑跟隨
+-------------------
+    transform.position = Vector3.Lerp(transform.position, goal, followSpeed * Time.deltaTime);
+
+    第一步可以先寫 transform.position = goal;，確認能動再改成 Lerp。
+    為什麼乘 Time.deltaTime？每幀走的「比例」跟幀率脫鉤，60 fps 和 144 fps 手感才一樣
+    （嚴格說來 Lerp 這樣用不是完全幀率無關，但教學上夠用）。
+
+
+綁骨步驟（教師版的做法）
+------------------------
+  骨架（13 根）：Hip → Chest → Head
+                 Chest → UpperArm_R → LowerArm_R → Hand_R（左手同理）
+                 Hip → Thigh_R → Shin_R（左腳同理）
+  IK：RigHero 加 IK Manager 2D，Solver 用 Limb，Effector = Hand_R，Target = HandTarget，勾 Flip
+  Idle：Chest、Head 微微擺動，左手揮手（Teacher/Animations/RigHero_Idle.anim）
+
+  學生最常卡的地方：
+    ・右手只點了兩節 → Limb 需要 Effector 往上還有兩節（上臂、前臂、手共三節）
+    ・Auto Weights 沒按 Apply 就關掉 Skinning Editor → Sprite Skin 的 Create Bones 是灰的
+    ・權重讓頭被手臂拉走 → 用 Weight Brush 把頭部刷回 Head 骨頭，或骨頭不要點得太靠近頭
+    ・IK 跟錄好的動畫打架 → IK 在動畫之後計算，所以 IK 控制的那隻手會蓋過動畫，這是正常的
+
+
+常見問題
+--------
+  ・HandTarget 消失：z 沒歸零
+  ・手完全不動：IK Manager 2D 的 Solvers 清單是空的，或 Target 沒指定
+  ・手肘反折：Limb Solver 勾 Flip
+  ・星星碰不到：手臂長度約 1.4 單位，滑鼠移太遠時 IK 只會把手伸直

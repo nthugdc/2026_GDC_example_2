@@ -1,0 +1,14 @@
+GDC_CJK.ttf
+===========
+
+本檔案為 Droid Sans Fallback Full (DroidSansFallbackFull.ttf) 的副本，
+僅更名為 GDC_CJK.ttf 以方便本教學專案使用，字型內容未經修改。
+
+授權：Apache License, Version 2.0
+著作權：Copyright (C) 2008 The Android Open Source Project
+
+取得授權全文：http://www.apache.org/licenses/LICENSE-2.0
+
+用途：提供繁體中文（CJK）字符，供場景內引導看板與 HUD 顯示中文使用。
+      Unity 內建的 LiberationSans 不含 CJK 字符，若移除本檔案，
+      所有中文文字會顯示為方框（tofu）。

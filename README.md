@@ -64,6 +64,11 @@ git lfs ls-files
 > ⚠️ 開始寫程式前請務必先看講義開頭：本專案只能用**新版 Input System**（不能用 `Input.GetKeyDown`）。
 > 另外，**播放中改的數值一按停止就會還原**，要改參數請先停止播放。
 
+## 📽️ 社課簡報
+
+[`Slides/NTHU_GDC_Tilemap_Animation.pptx`](Slides/NTHU_GDC_Tilemap_Animation.pptx)（54 頁，可直接拖進 Google 簡報開啟）
+・[PDF 版](Slides/NTHU_GDC_Tilemap_Animation.pdf)
+
 ## 章節一覽
 
 | 章 | 主題 | 要做什麼 | 時間 |

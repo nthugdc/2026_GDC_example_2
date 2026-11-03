@@ -31,6 +31,7 @@ namespace GDCBuild
             Tile wall    = MakeTile("BackWall", DrawBackWall(), Tile.ColliderType.None);
             Tile bush    = MakeTile("Bush",     DrawBush(),     Tile.ColliderType.None);
             Tile tuft    = MakeTile("Tuft",     DrawTuft(),     Tile.ColliderType.None);
+            SaveSprite("Crate", DrawCrate());   // 木箱：第 6 章起用 GameObject 擺放（要能被打碎），所以只產圖、不做 Tile
 
             // ── 動畫磁磚：岩漿 ──
             var lavaFrames = new Sprite[4];
@@ -294,6 +295,18 @@ namespace GDCBuild
             for (int i = 0; i < blobs.GetLength(0); i++)
                 p.Circle(blobs[i, 0], blobs[i, 1] + 4, blobs[i, 2] - 8, c);
             p.Rect(0, 0, PX, 14, Shade(c, 0.8f));
+            return p;
+        }
+
+        static Painter DrawCrate()
+        {
+            var p = new Painter(PX, PX);
+            Color c = GDCPalette.Crate, dark = Shade(c, 0.6f);
+            p.Rect(2, 2, PX - 2, PX - 2, dark);
+            p.Rect(12, 12, PX - 12, PX - 12, c);
+            for (int k = 0; k < 3; k++)                       // 木板紋路
+                p.Rect(12, 38 + k * 26, PX - 12, 41 + k * 26, Shade(c, 0.8f));
+            p.Polygon(new[] { new Vector2(12, 22), new Vector2(22, 12), new Vector2(PX - 12, PX - 22), new Vector2(PX - 22, PX - 12) }, dark);
             return p;
         }
 

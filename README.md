@@ -2,7 +2,18 @@
 
 NTHU GDC（清華大學遊戲創作社）Unity 2D 練習專案 — 給**完全沒有程式基礎**的新社員。
 
-七個章節，約 3.5 小時的單次工作坊，帶你認識兩大主題：**Tilemap（磁磚地圖）** 與 **2D 動畫**（Sprite Sheet 與骨骼動畫）。
+九個章節、兩堂社課，帶你認識兩大主題：**Tilemap（磁磚地圖）** 與 **2D 動畫**（Sprite Sheet、Skeletal Animation、Animation Event、State Machine）。
+
+## 已經有專案的人：先更新！（第 6、7 章是新加的）
+
+| 你上次怎麼拿到專案的 | 這次要做 |
+|---|---|
+| **git clone** | 在專案資料夾開終端機：`git pull`，再 `git lfs pull` |
+| **下載 zip** | 重新到 GitHub 按 **Code → Download ZIP**，解壓到**新的資料夾**（不要覆蓋舊的） |
+
+- 上週自己寫的腳本想留著？更新前先另存一份（例如 `Ch3_TileProbe.cs`）
+- `git pull` 出現衝突（conflict）就舉手
+- 更新成功的話，`Assets/_GDC/Scenes/` 裡看得到 `Ch6_AnimEvent`、`Ch7_StateMachine`、`Ch8_Free`
 
 ## 取得專案
 
@@ -53,21 +64,23 @@ git lfs ls-files
 3. 按 ▶
 
 > 第一次開啟會花幾分鐘匯入資源，屬正常現象。
-> 操作：**A / D** 移動、**空白鍵** 跳、**R** 重玩、**N / P** 下一章 / 上一章。
+> 操作：**A / D** 移動、**空白鍵** 跳、**J** 攻擊（第 6 章起）、**R** 重玩、**N / P** 下一章 / 上一章。
 
 ## 📖 完整講義
 
 **→ [Assets/_GDC/Docs/README.md](Assets/_GDC/Docs/README.md) ←**
 
-裡面有環境須知、時間分配、資料夾地圖與給幹部的備課說明；每一章另有獨立講義（`Docs/Ch0.md` ~ `Ch6.md`）。
+裡面有環境須知、時間分配、資料夾地圖與給幹部的備課說明；每一章另有獨立講義（`Docs/Ch0.md` ~ `Ch8.md`）。
 
 > ⚠️ 開始寫程式前請務必先看講義開頭：本專案只能用**新版 Input System**（不能用 `Input.GetKeyDown`）。
 > 另外，**播放中改的數值一按停止就會還原**，要改參數請先停止播放。
 
 ## 📽️ 社課簡報
 
-[`Slides/NTHU_GDC_Tilemap_Animation.pptx`](Slides/NTHU_GDC_Tilemap_Animation.pptx)（54 頁，可直接拖進 Google 簡報開啟）
-・[PDF 版](Slides/NTHU_GDC_Tilemap_Animation.pdf)
+- 完整版：[`Slides/NTHU_GDC_Tilemap_Animation.pptx`](Slides/NTHU_GDC_Tilemap_Animation.pptx)・[PDF](Slides/NTHU_GDC_Tilemap_Animation.pdf)
+- 第二堂（動畫）：[`Slides/NTHU_GDC_Animation_Week2.pptx`](Slides/NTHU_GDC_Animation_Week2.pptx)・[PDF](Slides/NTHU_GDC_Animation_Week2.pdf)
+
+可直接拖進 Google 簡報開啟。重新產生簡報的方法見 [`Slides/tools/README.md`](Slides/tools/README.md)。
 
 ## 章節一覽
 
@@ -75,11 +88,13 @@ git lfs ls-files
 |---|---|---|---|
 | 0 | Grid 與 Tilemap | 只改 Inspector，認識格子與圖層 | 15 分 |
 | 1 | Tile Palette | 自己畫地圖、加上碰撞 | 25 分 |
-| 2 | Rule Tile 與動畫磁磚 | 改磁磚資產，補 Rule Tile 規則 | 30 分 |
+| 2 | Rule Tile 與 Animated Tile | 改磁磚資產，補 Rule Tile 規則 | 30 分 |
 | 3 | 用程式讀寫 Tilemap | 第一支腳本：踩冰、岩漿、挖磚放磚（6 個 TODO） | 35 分 |
-| 4 | Sprite Sheet 動畫 | 切圖、Animator 狀態機、3 個 TODO | 35 分 |
-| 5 | 2D 骨骼動畫與 IK | 綁骨、錄動畫、讓手跟著滑鼠（2 個 TODO） | 35 分 |
-| 6 | 自由創作 | 自己畫關卡、自己寫 Animation Event 腳本 | 剩下的時間 |
+| 4 | Sprite Sheet 與 Animator | Slice、Animation Clip、State、Transition（3 個 TODO） | 40 分 |
+| 5 | 2D Skeletal Animation 與 IK | Bone、Weight、Record、IK（2 個 TODO） | 40 分 |
+| 6 | Animation Event | 揮劍打碎木箱、跑步揚塵（3 個 TODO） | 30 分 |
+| 7 | State Machine | enum + switch 寫主角的狀態機（3 個 TODO） | 30 分 |
+| 8 | 自由創作 | 自己畫關卡、用上攻擊與狀態機 | 剩下的時間 |
 
 ## 資料夾
 

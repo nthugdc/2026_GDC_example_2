@@ -40,12 +40,20 @@ namespace GDCBuild
         [MenuItem(M + "重建章節/第 5 章 · 骨骼動畫", false, 25)]
         public static void BuildCh5() => Ch5Builder.Build();
 
-        [MenuItem(M + "重建章節/第 6 章 · 自由創作", false, 26)]
+        [MenuItem(M + "重建章節/第 6 章 · Animation Event", false, 26)]
         public static void BuildCh6() => Ch6Builder.Build();
+
+        [MenuItem(M + "重建章節/第 7 章 · State Machine", false, 27)]
+        public static void BuildCh7() => Ch7Builder.Build();
+
+        [MenuItem(M + "重建章節/第 8 章 · 自由創作", false, 28)]
+        public static void BuildCh8() => Ch8Builder.Build();
 
         [MenuItem(M + "建置/3. 重建全部章節（學生版 + 教師版）", false, 100)]
         public static void BuildAllChapters()
         {
+            // 清空 Build Settings 再依序加回來，N / P 切換章節的順序才會對
+            EditorBuildSettings.scenes = new EditorBuildSettingsScene[0];
             foreach (bool answer in new[] { false, true })
             {
                 Ch0Builder.Build(answer);
@@ -55,6 +63,8 @@ namespace GDCBuild
                 Ch4Builder.Build(answer);
                 Ch5Builder.Build(answer);
                 Ch6Builder.Build(answer);
+                Ch7Builder.Build(answer);
+                Ch8Builder.Build(answer);
             }
             Debug.Log("[GDC] 所有章節重建完成");
         }

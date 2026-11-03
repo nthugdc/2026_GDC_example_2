@@ -1,0 +1,28 @@
+第 8 章：自由創作 —— 帶活動的建議
+===================================
+教師版場景：Teacher/Scenes/Ch8_Free_Answer.unity（範例關卡 + 終點島上的木箱）
+
+
+這章的主角
+----------
+  沿用學生自己第 7 章的 Ch7_HeroStateMachine（教師版用解答）。
+  第 7 章沒寫完的學生，角色會卡在 Run 或 Jump：先陪他補 7-A、7-B 再開始畫關卡。
+
+  木箱 Prefab：Assets/_GDC/Prefabs/Crate（拖進場景即可，會往下掉、打得碎、站得上去）。
+  只拖 Art/Tiles/Crate.png 那張圖是不會動的（沒有 Rigidbody、Collider、Breakable）。
+
+
+加分題提示
+----------
+  Footstep：在 Animations/Ch7/Hero_Run_Ch7 加 Event，並在 Ch7_HeroStateMachine 加
+    public void Footstep() { GDCFx.Puff(move.FeetPosition(), Color.white); }
+    注意不要加在 Animations/Hero_Run（第 4 章共用），否則第 4 章會出現 no receiver。
+
+  Fall State：enum 加 Fall；Jump 裡 if (rb.linearVelocity.y < 0f) ChangeState(HeroState.Fall);
+    Fall 裡沿用 7-B 的落地條件。Animator 要新增一個名字叫 Fall 的 State（Clip 用 Hero_Jump 即可）。
+
+
+評分參考
+--------
+  基本：從起點走得到終點、用到至少兩種磁磚、Hazard 有岩漿、至少一堆要打碎的木箱
+  加分：關卡有明顯的設計意圖（木箱接岩漿、冰上木箱…）、新的 Event 或新的 State

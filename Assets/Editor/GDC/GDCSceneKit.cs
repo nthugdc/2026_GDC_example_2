@@ -407,6 +407,45 @@ namespace GDCBuild
             return go;
         }
 
+        // ── 第 6 章起：木箱與頭上的 State 文字 ──────────────────────────
+
+        /// <summary>
+        /// 一個打得碎的木箱（1 × 1）。會往下掉但不會被推走：
+        /// 疊起來時打掉最下面那個，上面的會掉下來補位，要一個一個打。
+        /// </summary>
+        public static GameObject Crate(Vector2 pos)
+        {
+            var go = new GameObject("Crate");
+            go.transform.position = pos;
+            go.layer = LayerMask.NameToLayer("Ground");   // 站得上去，HeroMove 也把它當地面
+            var sr = go.AddComponent<SpriteRenderer>();
+            sr.sprite = GDCPaths.Load<Sprite>(GDCPaths.Tiles + "/Crate.png");
+            sr.sortingOrder = OrderObject;
+            var rb = go.AddComponent<Rigidbody2D>();
+            rb.constraints = RigidbodyConstraints2D.FreezePositionX | RigidbodyConstraints2D.FreezeRotation;
+            rb.mass = 20f;
+            rb.gravityScale = 2.5f;
+            go.AddComponent<BoxCollider2D>().size = new Vector2(0.96f, 1f);
+            go.AddComponent<Breakable>();
+            return go;
+        }
+
+        /// <summary>在 x 疊一堆木箱，最下面那個坐在 groundTop 上。</summary>
+        public static void CrateStack(float x, int height, float groundTop = 0f)
+        {
+            for (int i = 0; i < height; i++) Crate(new Vector2(x, groundTop + 0.5f + i));
+        }
+
+        /// <summary>角色頭上顯示目前 State 的小字（第 7 章）。</summary>
+        public static StateLabel AddStateLabel(GameObject player)
+        {
+            var t = Text("StateLabel", "Idle", Vector2.zero, new Vector2(3f, 0.6f), 2.6f, GDCPalette.Coin,
+                         OrderHud, TextAlignmentOptions.Center);
+            t.transform.SetParent(player.transform, false);
+            t.transform.localPosition = new Vector3(0f, 0.85f, 0f);
+            return t.gameObject.AddComponent<StateLabel>();
+        }
+
         // ── 章節基礎建設 ────────────────────────────────────────────────
 
         /// <summary>總管物件：GameManager + 章節切換 + 右上角 HUD + 過關橫幅。</summary>

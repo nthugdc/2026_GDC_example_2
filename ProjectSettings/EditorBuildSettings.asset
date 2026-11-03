@@ -24,8 +24,14 @@ EditorBuildSettings:
     path: Assets/_GDC/Scenes/Ch5_Skeleton.unity
     guid: e2fc4c1b234e7c70f93be84605d10e15
   - enabled: 1
-    path: Assets/_GDC/Scenes/Ch6_Free.unity
-    guid: ad1434e12e1bdbc17a92423f9ca4f278
+    path: Assets/_GDC/Scenes/Ch6_AnimEvent.unity
+    guid: c1314d386ebc177c89907cb8743cd6f2
+  - enabled: 1
+    path: Assets/_GDC/Scenes/Ch7_StateMachine.unity
+    guid: 8554070a9591c4c66b415775ee05fda5
+  - enabled: 1
+    path: Assets/_GDC/Scenes/Ch8_Free.unity
+    guid: dd4745a10eac4cb76ba29301e0eb79c7
   m_configObjects:
     com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 2bcd2660ca9b64942af0de543d8d7100, type: 3}
   m_UseUCBPForAssetBundles: 0

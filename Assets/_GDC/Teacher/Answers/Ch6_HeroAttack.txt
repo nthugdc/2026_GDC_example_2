@@ -1,0 +1,57 @@
+第 6 章解答：Ch6_HeroAttack（Animation Event）
+==============================================
+完整程式碼：Teacher/Scripts/Ch6_HeroAttack_Answer.cs
+已加好 Event 的 Clip：Teacher/Animations/Hero_Attack_Ch6_Answer.anim（第 2 格 AttackHit）
+                      Teacher/Animations/Hero_Run_Ch6_Answer.anim（第 1、4 格 Footstep）
+
+
+TODO 6-A ─ 按 J 攻擊
+--------------------
+    if (kb.jKey.wasPressedThisFrame) anim.SetTrigger("Attack");
+
+    為什麼用 Trigger 不用 Bool？
+      Bool 要自己記得設回 false，忘了就會一直攻擊。
+      Trigger 被 Any State → Attack 這條 Transition「用掉」之後自己變回 false，剛好適合一次性的動作。
+
+
+TODO 6-B ─ AttackHit（由 Event 呼叫）
+------------------------------------
+    foreach (Collider2D c in Physics2D.OverlapCircleAll(AttackCenter(), attackRadius))
+    {
+        Breakable box = c.GetComponent<Breakable>();
+        if (box != null) box.Break();
+    }
+
+    為什麼用 OverlapCircleAll 不用 OverlapCircle？
+      OverlapCircle 只回傳「其中一個」碰撞器，可能剛好是地板或玩家自己，木箱就漏掉了。
+      All 版本回傳全部，再一個一個問「你是不是木箱」。
+
+    為什麼不在 6-A 按下 J 的時候直接打碎？
+      按下 J 的瞬間劍還舉在頭上。把判定放在 Event 上，效果才會跟畫面對在同一格 ——
+      這正是這一章要教的事。學生可以把 Event 拖到第 0 格試試看有多怪。
+
+
+TODO 6-C ─ Footstep（由 Event 呼叫）
+-----------------------------------
+    if (!move.IsGrounded()) return;   // 加分：空中不冒煙
+    GDCFx.Puff(move.FeetPosition() + Vector3.up * 0.1f, dustColor, 0.25f);
+
+
+Animator 設定（已經做好，上課可以打開來講）
+------------------------------------------
+  Parameter：Speed (Float)、Grounded (Bool)、Attack (Trigger)
+  Any State → Attack：條件 Attack，Has Exit Time 關、Can Transition To Self 關
+  Attack → Idle：**Has Exit Time 開**、Exit Time = 1 —— 攻擊動作播完才回去
+    對照第 4 章「操作動畫要關掉 Has Exit Time」：關不關看的是「要不要等動畫播完」，不是固定答案。
+
+  Speed / Grounded / 面向由 Core/HeroAnimDriver 負責（就是第 4 章的解答），讓這章只專心在 Event。
+
+
+常見問題
+--------
+  ・Function 下拉找不到 AttackHit：函式不是 public，或腳本有編譯錯誤（下拉選單只列出編譯成功的函式）
+  ・no receiver 錯誤：Event 的名稱在 Player 身上找不到；或 Event 加到了別章的 Clip（例如 Hero_Run 共用片段）
+  ・木箱碎了兩個：攻擊範圍太大，Attack Radius 調小
+  ・Event 加在哪個 Clip？一定要加在 Hero_Attack_Ch6 / Hero_Run_Ch6，不要加在 Animations/ 底下共用的 Hero_Run
+    （第 4 章也用它，會在第 4 章噴 no receiver）
+  ・疊 3 個的木箱打掉一個之後只剩 2 個，跳得過去 —— 這是允許的，不強迫全部打完

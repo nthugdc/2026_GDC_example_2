@@ -1,9 +1,10 @@
 # 《磁磚與動畫工作坊》— NTHU GDC 2D 練習專案
 
-給**完全沒有程式基礎**的新社員，用一個下午（約 3.5 小時）認識 Unity 2D 的兩大主題：
+給**完全沒有程式基礎**的新社員，用兩堂社課認識 Unity 2D 的兩大主題：
 
 - **Tilemap**：用「磁磚」畫地圖，而不是一個一個擺方塊
-- **2D 動畫**：逐格換圖的 **Sprite Sheet**，以及讓一張圖「長出骨頭」的 **2D 骨骼動畫**
+- **2D 動畫**：逐格換圖的 **Sprite Sheet**、讓一張圖「長出骨頭」的 **Skeletal Animation**，
+  以及讓動畫呼叫程式的 **Animation Event** 和 **State Machine**
 
 每一章都是一個可以玩的小關卡，難度一章一章往上加：
 
@@ -11,14 +12,28 @@
 |---|---|---|---|
 | 0 | Grid 與 Tilemap | 只改 Inspector | 15 分 |
 | 1 | Tile Palette | 自己畫地圖、加碰撞 | 25 分 |
-| 2 | Rule Tile 與動畫磁磚 | 改磁磚資產、補規則 | 30 分 |
+| 2 | Rule Tile 與 Animated Tile | 改磁磚資產、補規則 | 30 分 |
 | 3 | 用程式讀寫 Tilemap | 第一次寫程式（填空） | 35 分 |
-| — | 休息 | | 10 分 |
-| 4 | Sprite Sheet 動畫 | 切圖、Animator、填空 | 35 分 |
-| 5 | 2D 骨骼動畫與 IK | 綁骨、錄動畫、填空 | 35 分 |
-| 6 | 自由創作 | 自己畫關卡、自己寫腳本 | 剩下的時間 |
+| 4 | Sprite Sheet 與 Animator | Slice、Animation Clip、State、Transition、填空 | 40 分 |
+| 5 | 2D Skeletal Animation 與 IK | Bone、Weight、Record、IK Solver、填空 | 40 分 |
+| 6 | Animation Event | 讓動畫呼叫函式：攻擊打碎木箱、跑步揚塵 | 30 分 |
+| 7 | State Machine | 用 enum + switch 寫主角的狀態機 | 30 分 |
+| 8 | 自由創作 | 自己畫關卡、用上攻擊與狀態機 | 剩下的時間 |
+
+（第 0～3 章是第一堂，第 4～8 章是第二堂）
 
 ---
+
+## 這週要先更新專案！（第 6、7 章是新加的）
+
+| 你上次怎麼拿到專案的 | 這次要做 |
+|---|---|
+| **git clone** | 在專案資料夾開終端機：`git pull`，再 `git lfs pull` |
+| **下載 zip** | 重新到 GitHub 按 **Code → Download ZIP**，解壓到**新的資料夾**（不要覆蓋舊的） |
+
+- 上週自己寫的腳本想留著？更新前先另存一份（例如 `Ch3_TileProbe.cs`）
+- `git pull` 出現衝突（conflict）就舉手
+- 更新成功的話，`Assets/_GDC/Scenes/` 裡看得到 `Ch6_AnimEvent`、`Ch7_StateMachine`、`Ch8_Free`
 
 ## 開始之前（很重要，只有兩件事）
 
@@ -45,6 +60,7 @@
 
 - 開啟 `Assets/_GDC/Scenes/Ch0_Grid.unity`，按播放
 - **A / D** 或方向鍵移動，**空白鍵**跳
+- **J** 攻擊（第 6 章起）
 - **R** 重玩本章、**N** 下一章、**P** 上一章
 - 每章的講義在 `Assets/_GDC/Docs/ChN.md`，畫面左上角的看板是精簡版
 

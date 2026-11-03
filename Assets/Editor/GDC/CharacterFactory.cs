@@ -29,21 +29,32 @@ namespace GDCBuild
         public const string RigRiggedPath = GDCPaths.TeacherArt + "/RigHero_Rigged.png";
 
         public const string HeroController     = GDCPaths.Animations + "/Hero.controller";
+        public const string AttackPath         = GDCPaths.Characters + "/Hero_Attack.png";
         public const string Ch6Controller      = GDCPaths.Animations + "/Ch6/Hero_Ch6.controller";
         public const string Ch6AnswerController= GDCPaths.TeacherAnim + "/Hero_Ch6_Answer.controller";
+        public const string Ch7Controller      = GDCPaths.Animations + "/Ch7/Hero_Ch7.controller";
+        public const string Ch6AttackClip      = GDCPaths.Animations + "/Ch6/Hero_Attack_Ch6.anim";
+        public const string Ch6RunClip         = GDCPaths.Animations + "/Ch6/Hero_Run_Ch6.anim";
         public const string RigIdleClip        = GDCPaths.TeacherAnim + "/RigHero_Idle.anim";
         public const string RigController      = GDCPaths.TeacherAnim + "/RigHero.controller";
 
         static readonly (string name, int count)[] Frames = { ("Idle", 4), ("Run", 6), ("Jump", 2) };
+        static readonly (string name, int count)[] AttackFrames = { ("Attack", 4) };
 
         public static void Run()
         {
             GDCPaths.EnsureFolders();
             EnsureFolder(GDCPaths.Animations + "/Ch6");
+            EnsureFolder(GDCPaths.Animations + "/Ch7");
 
-            Painter sheet = DrawSheet();
+            Painter sheet = DrawSheet(Poses().ToList());
             sheet.Save(SheetPath, PPU, SpriteImportMode.Multiple);
-            SliceSheet(SheetPath);
+            SliceSheet(SheetPath, Frames);
+
+            // 第 6 章起的攻擊動畫：另外一張圖，不動第 4 章的 12 格 sheet
+            Painter attack = DrawSheet(AttackPoses().ToList());
+            attack.Save(AttackPath, PPU, SpriteImportMode.Multiple);
+            SliceSheet(AttackPath, AttackFrames);
             sheet.Save(UnslicedPath, PPU, SpriteImportMode.Single);   // 故意不切，留給第 4 章
 
             Painter rig = DrawRigHero();
@@ -70,6 +81,8 @@ namespace GDCBuild
             public float bob, lean;
             public float thighF, kneeF, thighB, kneeB;     // 角度（度）：0 = 朝正下方，正值 = 往前（右）
             public float armF, elbowF, armB, elbowB;
+            public bool sword, slash;      // 前手拿劍、畫出揮砍的弧線
+            public float swordDeg;         // 劍指的方向（跟手臂一樣：0 = 朝下，正值 = 往前）
         }
 
         static Vector2 Dir(float deg)
@@ -101,9 +114,17 @@ namespace GDCBuild
             yield return new Pose { bob = 2, lean = 0, thighF = 25, kneeF = 10, thighB = -25, kneeB = 25, armF = 100, elbowF = 10, armB = -80, elbowB = 10 };
         }
 
-        static Painter DrawSheet()
+        /// <summary>攻擊 4 格：舉劍 → 揮下 → 命中（有揮砍弧線）→ 收招。第 2 格（命中）是放 AttackHit 事件的地方。</summary>
+        static IEnumerable<Pose> AttackPoses()
         {
-            List<Pose> poses = Poses().ToList();
+            yield return new Pose { bob = 0, lean = -6, thighF = 14, thighB = -14, armF = 150, elbowF = 25, armB = -20, elbowB = 20, sword = true, swordDeg = 245 };
+            yield return new Pose { bob = -1, lean = 8, thighF = 22, kneeF = 10, thighB = -18, armF = 110, elbowF = 0, armB = -30, elbowB = 20, sword = true, swordDeg = 105 };
+            yield return new Pose { bob = -2, lean = 16, thighF = 30, kneeF = 20, thighB = -22, armF = 70, elbowF = -5, armB = -40, elbowB = 20, sword = true, swordDeg = 75, slash = true };
+            yield return new Pose { bob = -1, lean = 6, thighF = 16, kneeF = 8, thighB = -12, armF = 35, elbowF = 25, armB = -15, elbowB = 15, sword = true, swordDeg = 55 };
+        }
+
+        static Painter DrawSheet(List<Pose> poses)
+        {
             var sheet = new Painter(Cell * poses.Count, Cell);
             for (int i = 0; i < poses.Count; i++)
             {
@@ -141,6 +162,19 @@ namespace GDCBuild
 
             Color o = GDCPalette.Outline;
             const float ow = 3f;
+            Vector2 tip = handF + Dir(q.swordDeg) * 34f;
+            if (q.slash)
+            {
+                // 揮砍弧線：以肩膀為圓心的一段半透明扇形
+                Vector2 c = shoulder;
+                p.Fill(c.x - 60, c.y - 60, c.x + 60, c.y + 60, (x, y) =>
+                {
+                    Vector2 v = new Vector2(x, y) - c; float d = v.magnitude;
+                    float a = Mathf.Atan2(v.x, -v.y) * Mathf.Rad2Deg;   // 同 Dir 的角度定義
+                    return d > 38f && d < 52f && a > 40f && a < 150f;
+                }, new Color(1f, 1f, 1f, 0.55f));
+            }
+            if (q.sword) p.Capsule(handF, tip, 3 + ow, o);
             // 外框
             p.Capsule(shoulder, elbB, 5 + ow, o); p.Capsule(elbB, handB, 5 + ow, o);
             p.Capsule(hip, kneeB, 7 + ow, o); p.Capsule(kneeB, footB, 6 + ow, o); p.Capsule(footB, footB + new Vector2(7, 0), 4 + ow, o);
@@ -162,6 +196,13 @@ namespace GDCBuild
             p.Fill(hc.x - 18, hc.y - 18, hc.x + 18, hc.y + 18, (x, y) =>
                 (x - hc.x) * (x - hc.x) + (y - hc.y) * (y - hc.y) <= 17f * 17f && (y > hc.y + 5f || x < hc.x - 6f), GDCPalette.Hair);
             p.Circle(hc.x + 8f, hc.y + 1f, 2.6f, o);
+            if (q.sword)
+            {
+                p.Capsule(handF, tip, 3, new Color(0.86f, 0.9f, 0.95f));
+                Vector2 side = new Vector2(-Dir(q.swordDeg).y, Dir(q.swordDeg).x) * 6f;
+                Vector2 guard = handF + Dir(q.swordDeg) * 6f;
+                p.Capsule(guard - side, guard + side, 2.5f, GDCPalette.Coin);
+            }
             p.Capsule(shoulder, elbF, 5, GDCPalette.Shirt); p.Capsule(elbF, handF, 5, GDCPalette.Skin);
         }
 
@@ -171,7 +212,7 @@ namespace GDCBuild
         /// 用 Sprite Editor 的資料介面切圖（等同學生在 Sprite Editor 按 Slice → Grid By Cell Size）。
         /// 已存在的同名 sprite 沿用原本的 ID，動畫片段的參照才不會斷。
         /// </summary>
-        static void SliceSheet(string path)
+        static void SliceSheet(string path, (string name, int count)[] frames)
         {
             var ti = (TextureImporter)AssetImporter.GetAtPath(path);
             var factories = new SpriteDataProviderFactories();
@@ -182,7 +223,7 @@ namespace GDCBuild
             var old = dp.GetSpriteRects().ToDictionary(r => r.name, r => r.spriteID);
             var rects = new List<SpriteRect>();
             int i = 0;
-            foreach (var (name, count) in Frames)
+            foreach (var (name, count) in frames)
                 for (int k = 0; k < count; k++, i++)
                 {
                     string n = $"Hero_{name}_{k}";
@@ -205,7 +246,8 @@ namespace GDCBuild
 
         public static Sprite HeroFrame(string name)
         {
-            foreach (Object o in AssetDatabase.LoadAllAssetRepresentationsAtPath(SheetPath))
+            string path = name.StartsWith("Hero_Attack") ? AttackPath : SheetPath;
+            foreach (Object o in AssetDatabase.LoadAllAssetRepresentationsAtPath(path))
                 if (o is Sprite s && s.name == name) return s;
             Debug.LogError($"[GDC] 找不到 {name}，請先執行 GDC/建置/2. 產生美術素材");
             return null;
@@ -227,14 +269,23 @@ namespace GDCBuild
             AnimationClip jump = SpriteClip(GDCPaths.Animations + "/Hero_Jump.anim", HeroFrames("Jump", 2), 6f, null);
             HeroStateMachine(HeroController, idle, run, jump);
 
-            // 第 6 章：跑步片段另外複製一份，學生在上面加 Animation Event 不會影響其他章
-            AnimationClip run6 = SpriteClip(GDCPaths.Animations + "/Ch6/Hero_Run_Ch6.anim", HeroFrames("Run", 6), 12f, null);
-            HeroStateMachine(Ch6Controller, idle, run6, jump);
+            // 第 6 章（Animation Event）：Run、Attack 另外複製一份，學生在上面加 Event 不會影響其他章
+            Sprite[] atk = HeroFrames("Attack", 4);
+            AnimationClip run6 = SpriteClip(Ch6RunClip, HeroFrames("Run", 6), 12f, null);
+            AnimationClip atk6 = SpriteClip(Ch6AttackClip, atk, 10f, null, loop: false);
+            HeroStateMachine(Ch6Controller, idle, run6, jump, atk6);
 
             AnimationClip run6Answer = SpriteClip(GDCPaths.TeacherAnim + "/Hero_Run_Ch6_Answer.anim", HeroFrames("Run", 6), 12f,
-                                                  new[] { 1, 4 });   // 第 1、4 格腳著地
-            HeroStateMachine(Ch6AnswerController, idle, run6Answer, jump);
+                                                  new[] { (1f, "Footstep"), (4f, "Footstep") });   // 第 1、4 格腳著地
+            AnimationClip atk6Answer = SpriteClip(GDCPaths.TeacherAnim + "/Hero_Attack_Ch6_Answer.anim", atk, 10f,
+                                                  new[] { (2f, "AttackHit") }, loop: false);       // 第 2 格劍揮到前方
+            HeroStateMachine(Ch6AnswerController, idle, run6Answer, jump, atk6Answer);
 
+            // 第 7 章（State Machine）：State 只有名字、沒有任何 Transition，全部由程式 anim.Play 切換
+            AnimationClip atk7 = SpriteClip(GDCPaths.Animations + "/Ch7/Hero_Attack_Ch7.anim", atk, 10f,
+                                            new[] { (2f, "AttackHit"), (3.8f, "AttackEnd") }, loop: false);
+            AnimationClip run7 = SpriteClip(GDCPaths.Animations + "/Ch7/Hero_Run_Ch7.anim", HeroFrames("Run", 6), 12f, null);
+            CodeDrivenController(Ch7Controller, idle, run7, jump, atk7);
             AssetDatabase.SaveAssets();
         }
 
@@ -248,7 +299,8 @@ namespace GDCBuild
         }
 
         /// <summary>逐格換圖的片段：在 SpriteRenderer.m_Sprite 上放 ObjectReference 關鍵影格。</summary>
-        static AnimationClip SpriteClip(string path, Sprite[] frames, float fps, int[] footstepFrames)
+        /// <param name="events">（第幾格, 函式名稱）；格數可以等於 frames.Length，代表片段的最後一刻</param>
+        static AnimationClip SpriteClip(string path, Sprite[] frames, float fps, (float frame, string fn)[] events, bool loop = true)
         {
             AnimationClip clip = LoadOrCreateAsset(path, () => new AnimationClip());
             clip.ClearCurves();
@@ -262,21 +314,22 @@ namespace GDCBuild
             AnimationUtility.SetObjectReferenceCurve(clip, binding, keys);
 
             AnimationClipSettings settings = AnimationUtility.GetAnimationClipSettings(clip);
-            settings.loopTime = true;
+            settings.loopTime = loop;
             AnimationUtility.SetAnimationClipSettings(clip, settings);
 
-            var events = new List<AnimationEvent>();
-            if (footstepFrames != null)
-                foreach (int f in footstepFrames)
-                    events.Add(new AnimationEvent { time = f / fps, functionName = "Footstep" });
-            AnimationUtility.SetAnimationEvents(clip, events.ToArray());
+            var list = new List<AnimationEvent>();
+            if (events != null)
+                foreach (var (f, fn) in events)
+                    list.Add(new AnimationEvent { time = f / fps, functionName = fn });
+            AnimationUtility.SetAnimationEvents(clip, list.ToArray());
 
             EditorUtility.SetDirty(clip);
             return clip;
         }
 
         /// <summary>Idle / Run / Jump 三個狀態。轉換一律關掉 Has Exit Time，切換才不會延遲。</summary>
-        static void HeroStateMachine(string path, AnimationClip idle, AnimationClip run, AnimationClip jump)
+        static void HeroStateMachine(string path, AnimationClip idle, AnimationClip run, AnimationClip jump,
+                                     AnimationClip attack = null)
         {
             AnimatorController ac = AssetDatabase.LoadAssetAtPath<AnimatorController>(path);
             if (ac == null) ac = AnimatorController.CreateAnimatorControllerAtPath(path);
@@ -284,6 +337,7 @@ namespace GDCBuild
             ac.parameters = new AnimatorControllerParameter[0];
             ac.AddParameter("Speed", AnimatorControllerParameterType.Float);
             ac.AddParameter("Grounded", AnimatorControllerParameterType.Bool);
+            if (attack != null) ac.AddParameter("Attack", AnimatorControllerParameterType.Trigger);
             ac.parameters = ac.parameters.Select(p => { if (p.name == "Grounded") p.defaultBool = true; return p; }).ToArray();
 
             AnimatorStateMachine sm = ac.layers[0].stateMachine;
@@ -303,6 +357,39 @@ namespace GDCBuild
             toJump.canTransitionToSelf = false;
             Quick(sJump.AddTransition(sIdle)).AddCondition(AnimatorConditionMode.If, 0f, "Grounded");
 
+            if (attack != null)
+            {
+                // Any State → Attack：Trigger 一響就立刻切過去
+                AnimatorState sAtk = sm.AddState("Attack", new Vector3(560, 200));
+                sAtk.motion = attack;
+                AnimatorStateTransition toAtk = Quick(sm.AddAnyStateTransition(sAtk));
+                toAtk.AddCondition(AnimatorConditionMode.If, 0f, "Attack");
+                toAtk.canTransitionToSelf = false;
+                // Attack → Idle：這裡「要」開 Has Exit Time —— 攻擊動作播完才回去
+                AnimatorStateTransition back = sAtk.AddTransition(sIdle);
+                back.hasExitTime = true; back.exitTime = 1f; back.duration = 0f;
+            }
+
+            EditorUtility.SetDirty(ac);
+        }
+
+        /// <summary>第 7 章：只有 State、沒有 Transition 的 Controller。切換全部交給程式（anim.Play）。</summary>
+        static void CodeDrivenController(string path, AnimationClip idle, AnimationClip run, AnimationClip jump, AnimationClip attack)
+        {
+            AnimatorController ac = AssetDatabase.LoadAssetAtPath<AnimatorController>(path);
+            if (ac == null) ac = AnimatorController.CreateAnimatorControllerAtPath(path);
+            ac.parameters = new AnimatorControllerParameter[0];
+
+            AnimatorStateMachine sm = ac.layers[0].stateMachine;
+            foreach (ChildAnimatorState s in sm.states) sm.RemoveState(s.state);
+            foreach (AnimatorStateTransition t in sm.anyStateTransitions) sm.RemoveAnyStateTransition(t);
+
+            AnimatorState sIdle = sm.AddState("Idle", new Vector3(300, 0));
+            sm.AddState("Run", new Vector3(300, 120)).motion = run;
+            sm.AddState("Jump", new Vector3(560, 0)).motion = jump;
+            sm.AddState("Attack", new Vector3(560, 120)).motion = attack;
+            sIdle.motion = idle;
+            sm.defaultState = sIdle;
             EditorUtility.SetDirty(ac);
         }
 

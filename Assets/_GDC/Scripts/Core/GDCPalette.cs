@@ -26,6 +26,7 @@ public static class GDCPalette
     public static readonly Color LavaHot    = Hex("#FFD23F"); // 岩漿亮部
     public static readonly Color BackWall   = Hex("#2A3646"); // 背景牆
     public static readonly Color Leaf       = Hex("#3E9E5B"); // 前景草叢
+    public static readonly Color Crate      = Hex("#C98B5E"); // 木箱（第 6 章起）
 
     // ── 角色 ──
     public static readonly Color Skin       = Hex("#F6C89F");

@@ -1,0 +1,67 @@
+第 7 章解答：Ch7_HeroStateMachine（State Machine）
+================================================
+完整程式碼：Teacher/Scripts/Ch7_HeroStateMachine_Answer.cs
+Animator Controller：Animations/Ch7/Hero_Ch7.controller（四個 State、沒有 Transition）
+Attack Clip：Animations/Ch7/Hero_Attack_Ch7.anim（第 2 格 AttackHit、第 3.8 格 AttackEnd）
+
+
+TODO 7-A ─ Run
+--------------
+    if (attackPressed) ChangeState(HeroState.Attack);
+    else if (!grounded) ChangeState(HeroState.Jump);
+    else if (!moving) ChangeState(HeroState.Idle);
+
+    為什麼用 else if？
+      同一幀只能換一次 State。如果三個 if 各自獨立，同時成立時會連換好幾次，
+      最後停在哪裡要看寫的順序，很難推理。else if 讓「優先順序」一目了然：攻擊 > 跳 > 停。
+
+
+TODO 7-B ─ Jump
+---------------
+    if (grounded && falling) ChangeState(HeroState.Idle);
+
+    為什麼要加 falling？
+      跳上台階時，人還在往上衝，腳底的偵測線（往下 0.12 單位）就可能先碰到台階邊緣，
+      只看 grounded 會提早變回 Idle，下一幀又離地變回 Jump，動畫閃一下。
+      「已經不是往上衝」才算真的落地。
+
+
+TODO 7-C ─ 進入 State 時要做的事（寫在 ChangeState 裡）
+--------------------------------------------------
+    if (next == HeroState.Attack)
+    {
+        move.enabled = false;
+        rb.linearVelocity = new Vector2(0f, rb.linearVelocity.y);
+    }
+    else
+    {
+        move.enabled = true;
+    }
+
+    為什麼寫在 ChangeState，不是寫在 Update 的 case 裡？
+      Update 每一幀都會跑；「進入時做一次」的事放在 ChangeState，只會在換 State 的那一刻發生。
+      這就是狀態機常說的 OnEnter。
+
+    為什麼要把水平速度歸零？
+      HeroMove 關掉之後不會再改速度，角色會帶著原本的速度一路滑過去（像在冰上攻擊）。
+      垂直速度保留，在空中攻擊才會繼續往下掉。
+
+    為什麼 else 一定要有？
+      沒有 else 的話，攻擊一次之後 move.enabled 永遠是 false —— 角色再也不能動。
+      這是講義裡要學生親手試的錯誤。
+
+
+Attack 怎麼離開？
+-----------------
+  switch 的 Attack 那一段什麼都不做。離開的時機由 Clip 最後的 Animation Event 呼叫 AttackEnd()，
+  AttackEnd() 呼叫 ChangeState(HeroState.Idle)。
+  程式狀態機 + Animation Event 是很常見的組合：動畫決定「什麼時候結束」，程式決定「結束後去哪」。
+  AttackEnd 放在 3.8 格而不是 4.0（Clip 的最尾端），避免剛好落在結束點上沒被觸發。
+
+
+常見問題
+--------
+  ・一開始就卡在 Jump：角色出生時在半空中，7-B 寫好就正常
+  ・「Animator.GotoState: State could not be found」：anim.Play 的名字和 Animator 的 State 名字不一致
+  ・攻擊後不能動：7-C 的 else 沒寫
+  ・漏了 break：C# 的 switch 不允許「掉到下一個 case」，編譯錯誤 CS0163

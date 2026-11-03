@@ -20,7 +20,7 @@ public class GDCAutopilot : MonoBehaviour
     public UnityEngine.Tilemaps.TileBase[] avoidTiles;
 
     HeroMove move;
-    bool jumpedLastFrame;
+    bool jumpedLastFrame, attackedLastFrame;
 
     void Awake()
     {
@@ -40,12 +40,15 @@ public class GDCAutopilot : MonoBehaviour
         List<Key> keys = new List<Key>();
         keys.Add(direction > 0f ? Key.D : Key.A);
 
-        bool wantJump = false;
+        bool wantJump = false, wantAttack = false;
         if (move.IsGrounded())
         {
             Vector2 pos = transform.position;
             Vector2 dir = new Vector2(direction, 0f);
-            bool wall = Physics2D.Raycast(pos + Vector2.down * 0.3f, dir, 0.5f, move.groundLayers).collider != null;
+            RaycastHit2D wallHit = Physics2D.Raycast(pos + Vector2.down * 0.3f, dir, 0.5f, move.groundLayers);
+            bool wall = wallHit.collider != null;
+            // 擋路的是木箱（第 6 章起）：用 J 攻擊，不要跳
+            if (wall && wallHit.collider.GetComponent<Breakable>() != null) { wantAttack = true; wall = false; }
             Vector2 ahead = pos + dir * gapLookAhead;
             // 往下看 2.5 格：只是往下一階不算坑；看到危險物（Hazard 圖層）也算坑
             int mask = move.groundLayers | LayerMask.GetMask("Hazard");
@@ -58,6 +61,9 @@ public class GDCAutopilot : MonoBehaviour
             }
             wantJump = wall || gap;
         }
+        // 按住會被當成同一次；放開一幀再按，wasPressedThisFrame 才會再次成立
+        if (wantAttack && !attackedLastFrame) keys.Add(Key.J);
+        attackedLastFrame = wantAttack && !attackedLastFrame;
 
         // 放開一幀再按，wasPressedThisFrame 才會再次成立
         if (wantJump && !jumpedLastFrame) keys.Add(Key.Space);

@@ -165,7 +165,7 @@ TextureImporter:
     physicsShape: []
     bones:
     - name: Hip
-      guid: de64de6c70e9b531b80b1547e33699a8
+      guid: 590ced8a72682cb3d96bebd4ed8e711b
       position: {x: 160, y: 222, z: 0}
       rotation: {x: 0, y: 0, z: 0.70710677, w: 0.70710677}
       length: 73
@@ -174,7 +174,7 @@ TextureImporter:
         serializedVersion: 2
         rgba: 4294967295
     - name: Chest
-      guid: ea68fe622df8b89e08fa7a0193eb6615
+      guid: 10c439fea6c1f40c0a459f879f216a67
       position: {x: 72.99999, y: 0.000004351139, z: 0}
       rotation: {x: 0, y: 0, z: 0, w: 1}
       length: 75
@@ -183,7 +183,7 @@ TextureImporter:
         serializedVersion: 2
         rgba: 4294967295
     - name: Head
-      guid: d4896eb0cf376aeb78010539223e3a7f
+      guid: 86ba0230a2b443bb8b05ed9002ab9af4
       position: {x: 74.99999, y: 0.0000044703484, z: 0}
       rotation: {x: 0, y: 0, z: 0, w: 1}
       length: 110
@@ -192,7 +192,7 @@ TextureImporter:
         serializedVersion: 2
         rgba: 4294967295
     - name: UpperArm_R
-      guid: b6928b8c31a9c054d9a6fc655992d9eb
+      guid: 65324d94d5c50a051a9940bab1e4e79a
       position: {x: 50, y: -42.999996, z: 0}
       rotation: {x: 0, y: 0, z: -0.95451355, w: 0.29816762}
       length: 79.05694
@@ -201,7 +201,7 @@ TextureImporter:
         serializedVersion: 2
         rgba: 4294967295
     - name: LowerArm_R
-      guid: c5cb767b1a47a969daf7c2bbc183aace
+      guid: 1f608514338f8431aa0ac0c962b2957c
       position: {x: 79.056946, y: -0.0000008940697, z: 0}
       rotation: {x: 0, y: 0, z: -0.07396726, w: 0.9972607}
       length: 72.44998
@@ -210,7 +210,7 @@ TextureImporter:
         serializedVersion: 2
         rgba: 4294967295
     - name: Hand_R
-      guid: 98cf5a66083bfd3218770dbff3ad7064
+      guid: 2b2d7b647333a6210acce9beeeac095e
       position: {x: 72.44998, y: -0.000008940697, z: 0}
       rotation: {x: 0, y: 0, z: -0.0049774274, w: 0.9999876}
       length: 27.730848
@@ -219,7 +219,7 @@ TextureImporter:
         serializedVersion: 2
         rgba: 4294967295
     - name: UpperArm_L
-      guid: 2c72f0f0016d291dc9fd689a1fe3821d
+      guid: ca6ba4d19bdcafe5a81fc134d3488b02
       position: {x: 49.999996, y: 43, z: 0}
       rotation: {x: 0, y: 0, z: -0.95451355, w: -0.2981676}
       length: 79.05694
@@ -228,7 +228,7 @@ TextureImporter:
         serializedVersion: 2
         rgba: 4294967295
     - name: LowerArm_L
-      guid: 1222f67aa824a00e8a91def72df72afe
+      guid: 059af086de63010e48f10244192ed50a
       position: {x: 79.05694, y: 0.0000074505806, z: 0}
       rotation: {x: 0, y: 0, z: 0.07396733, w: 0.9972607}
       length: 72.44998
@@ -237,7 +237,7 @@ TextureImporter:
         serializedVersion: 2
         rgba: 4294967295
     - name: Hand_L
-      guid: d263201359c3ea381935f949f72ff386
+      guid: 3ea9d05b1f57bc4d39a855092ebb35fd
       position: {x: 72.44999, y: 0.0000051259995, z: 0}
       rotation: {x: 0, y: 0, z: 0.0049774274, w: 0.9999876}
       length: 27.730848
@@ -246,7 +246,7 @@ TextureImporter:
         serializedVersion: 2
         rgba: 4294967295
     - name: Thigh_R
-      guid: b021ca84f15c41ab7980b74dda4b0434
+      guid: 968f0560fa16bb989976285b0665c47f
       position: {x: 0.0000013113022, y: -21.999998, z: 0}
       rotation: {x: 0, y: 0, z: -0.9986811, w: 0.05134239}
       length: 97.5141
@@ -255,7 +255,7 @@ TextureImporter:
         serializedVersion: 2
         rgba: 4294967295
     - name: Shin_R
-      guid: 48ac45b6cc6c4777581414b7cd772ed3
+      guid: 05b6e567d2acab42c8fd2a28ee668c71
       position: {x: 97.51411, y: 0.0000019669533, z: 0}
       rotation: {x: 0, y: 0, z: -0.02890412, w: 0.9995822}
       length: 89.08984
@@ -264,7 +264,7 @@ TextureImporter:
         serializedVersion: 2
         rgba: 4294967295
     - name: Thigh_L
-      guid: e0a9f20f1606cb12ab2428051a380fe7
+      guid: cab89429a60d050639d3a94f83ac130a
       position: {x: -0.0000013113022, y: 21.999998, z: 0}
       rotation: {x: 0, y: 0, z: -0.9986811, w: -0.05134236}
       length: 97.5141
@@ -273,7 +273,7 @@ TextureImporter:
         serializedVersion: 2
         rgba: 4294967295
     - name: Shin_L
-      guid: b999382f2c05ef035b159227ad93e388
+      guid: 9712bfe7c4d7ec893abbb9db226c5d39
       position: {x: 97.51411, y: 0.0000038146973, z: 0}
       rotation: {x: 0, y: 0, z: 0.02890412, w: 0.9995822}
       length: 89.08984

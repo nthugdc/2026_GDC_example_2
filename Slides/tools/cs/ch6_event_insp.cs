@@ -1,0 +1,11 @@
+UnmaxAll();
+Open("Assets/_GDC/Teacher/Scenes/Ch6_AnimEvent_Answer.unity");
+var player = Find("Player");
+var clip = UnityEditor.AssetDatabase.LoadAssetAtPath<UnityEngine.AnimationClip>("Assets/_GDC/Teacher/Animations/Hero_Attack_Ch6_Answer.anim");
+var t = T("UnityEditor.AnimationWindowBuiltin.AnimationWindowEvent");
+System.Reflection.MethodInfo edit = null;
+foreach (var m in t.GetMethods(BF)) if (m.Name == "Edit" && m.GetParameters().Length == 3) edit = m;
+var ev = (UnityEngine.Object)edit.Invoke(null, new object[] { player, clip, 0 });
+Select(ev);
+Win("UnityEditor.InspectorWindow");
+return RectOf("UnityEditor.InspectorWindow");
